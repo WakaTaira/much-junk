@@ -1,0 +1,88 @@
+#!/bin/sh
+
+# Gitのpre-pushフックで、特定のブランチへのpushを禁止するスクリプト
+
+# 注意: このスクリプトはローカルのGitリポジトリのpre-pushフックとして配置してください。
+# .git/hooks/pre-push
+
+# 概要:
+# 特定のブランチ発行やpushを禁止します。
+# vscode - git bash環境で動確済み。エラーメッセージもコマンド出力に表示されるようにしています。
+# ジョブ環境に応じてpushを禁止するブランチパターンを切り替えることができます。
+# ジョブ環境は環境変数JOB_ENVIRONMENTで指定、develop、staging、productのいずれかを想定しています。
+# windows git bash環境では~/.git_envに環境変数を定義してください。
+# local-*のブランチ名は一律で禁止なので、local-*でブランチを作ってそこで作業するのがおすすめです。
+# 例:
+#   - local-feature1
+#   - local-bugfix1
+#   - local-test1
+
+echo "------------------------ pre-pushフック実行 ------------------------"
+
+# 環境変数からジョブ環境を取得
+if [ -f "$HOME/.git_env" ]; then
+  source "$HOME/.git_env"
+fi
+CURRENT_ENVIRONMENT=${JOB_ENVIRONMENT:-develop}
+
+# 環境ごとに保護するブランチパターン
+# AIが生成したブランチパターンの例を整形したもの。必要に応じて調整
+PROTECTED_BRANCH_PATTERNS_FOR_DEVELOP=("master" "main" "release*" "hotfix*" "staging*" "stage-*" "local-*" "product*" "prod-*" "preprod*" "pre-prod*")
+PROTECTED_BRANCH_PATTERNS_FOR_STAGING=("master" "main" "release*" "hotfix*" "develop*" "dev-*" "product*" "prod-*" "preprod*" "pre-prod*" "local-*")
+PROTECTED_BRANCH_PATTERNS_FOR_PRODUCT=("master" "main" "release*" "hotfix*" "develop*" "dev-*" "staging*" "stage-*" "local-*")
+
+# デフォルトはdevelopの保護パターンを使用
+PROTECTED_BRANCH_PATTERNS=("${PROTECTED_BRANCH_PATTERNS_FOR_DEVELOP[@]}")
+
+# ジョブ環境に応じて保護するブランチパターンを設定
+if [ "$CURRENT_ENVIRONMENT" = "develop" ]; then
+  PROTECTED_BRANCH_PATTERNS=("${PROTECTED_BRANCH_PATTERNS_FOR_DEVELOP[@]}")
+elif [ "$CURRENT_ENVIRONMENT" = "staging" ]; then
+  PROTECTED_BRANCH_PATTERNS=("${PROTECTED_BRANCH_PATTERNS_FOR_STAGING[@]}")
+elif [ "$CURRENT_ENVIRONMENT" = "product" ]; then
+  PROTECTED_BRANCH_PATTERNS=("${PROTECTED_BRANCH_PATTERNS_FOR_PRODUCT[@]}")
+else
+  echo "Warning: 未知の環境 '$CURRENT_ENVIRONMENT' が指定されました。developの保護パターンを使用します。" >&2
+fi
+
+echo "環境: $CURRENT_ENVIRONMENT"
+echo -e "保護されているブランチパターン: ${PROTECTED_BRANCH_PATTERNS[*]}\n"
+
+# 標準入力から各ブランチを読み取り、それぞれチェック
+has_error=0
+checked_branches=()
+
+while read local_ref local_sha remote_ref remote_sha; do
+    # ブランチ削除（sha が 0000... の場合）はスキップ
+    # if echo "$local_sha" | grep -qE '^0+$'; then
+    #   continue
+    # fi
+
+    local_branch=$(echo "$local_ref" | sed 's|refs/heads/||')
+
+    # 既にチェック済みのブランチはスキップ
+    for checked in "${checked_branches[@]}"; do
+      if [ "$checked" = "$local_branch" ]; then
+        continue 2
+      fi
+    done
+    checked_branches+=("$local_branch")
+
+    echo "チェック中: $local_branch"
+
+    # ブランチパターンに一致するかチェック
+    for branch_pattern in "${PROTECTED_BRANCH_PATTERNS[@]}"; do
+      if [[ "$local_branch" == $branch_pattern ]]; then
+        echo -e "ERROR: '$local_branch'へのpushは禁止されています。保護パターンに一致「$branch_pattern」\n" >&2
+        has_error=1
+        continue 2
+      fi
+    done
+  echo -e "OK: ブランチ'$local_branch'へのpushは許可されています。\n"
+done
+
+if [ "$has_error" -eq 1 ]; then
+  echo "保護されたブランチが含まれているため、pushを中止します。" >&2
+  exit 1
+fi
+exit 0
