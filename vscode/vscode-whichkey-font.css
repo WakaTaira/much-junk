@@ -1,0 +1,9 @@
+/* WhichKey ポップアップ（QuickPick UI全体） */
+.quick-input-widget,
+.quick-input-widget .label-name,
+.quick-input-widget .label-description,
+.quick-input-widget .monaco-highlighted-label,
+.quick-input-widget .quick-input-list .monaco-list-row {
+    font-family: 'HackGen Console NF' !important;
+    font-size: 14px !important;
+}
