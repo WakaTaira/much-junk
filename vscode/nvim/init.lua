@@ -63,12 +63,12 @@ vim.keymap.set({'n', 'v', 'i'}, '<C-l>', recenter_cycle)
 vim.keymap.set('i', 'fd', '<ESC>')
 
 -- insertモード時のEmacsキーバインド(移動・編集のみ)のエミュレート
--- vim.keymap.set('i', '<C-p>', '<Up>') -- ↑
--- vim.keymap.set('i', '<C-n>', '<Down>') -- ↓
--- vim.keymap.set('i', '<C-b>', '<Left>') -- ←
--- vim.keymap.set('i', '<C-f>', '<Right>') -- →
--- vim.keymap.set('i', '<C-a>', '<C-o>^') -- 行頭へ
--- vim.keymap.set('i', '<C-e>', '<End>') -- 行末へ
+vim.keymap.set('i', '<C-p>', '<Up>') -- ↑
+vim.keymap.set('i', '<C-n>', '<Down>') -- ↓
+vim.keymap.set('i', '<C-b>', '<Left>') -- ←
+vim.keymap.set('i', '<C-f>', '<Right>') -- →
+vim.keymap.set('i', '<C-a>', '<C-o>^') -- 行頭へ
+vim.keymap.set('i', '<C-e>', '<End>') -- 行末へ
 -- vim.keymap.set('i', '<C-d>', '<Del>') -- Del
 -- vim.keymap.set('i', '<C-k>', '<C-o>d$') -- 行末まで削除
 -- vim.keymap.set('i', '<C-k>', '<ESC> Vd0i') -- 一行削除
