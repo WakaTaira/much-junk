@@ -1,0 +1,215 @@
+[
+    // ===== VSCode NeoVim =====
+    // emacsの編集操作をVSCode NeoVim使用時のinsertモードで有効にする
+    // 移動
+    {
+        "key": "ctrl+a",
+        "command": "cursorHome",
+        "when": "editorTextFocus && neovim.init && neovim.mode == 'insert'"
+    },
+    {
+        "key": "ctrl+e",
+        "command": "cursorEnd",
+        "when": "editorTextFocus && neovim.init && neovim.mode == 'insert'"
+    },
+    {
+        "key": "ctrl+b",
+        "command": "cursorLeft",
+        "when": "editorTextFocus && neovim.init && neovim.mode == 'insert'"
+    },
+    {
+        "key": "ctrl+f",
+        "command": "cursorRight",
+        "when": "editorTextFocus && neovim.init && neovim.mode == 'insert'"
+    },
+    {
+        "key": "ctrl+n",
+        "command": "cursorDown",
+        "when": "editorTextFocus && neovim.init && neovim.mode == 'insert'"
+    },
+    {
+        "key": "ctrl+p",
+        "command": "cursorUp",
+        "when": "editorTextFocus && neovim.init && neovim.mode == 'insert'"
+    },
+    // 削除
+    {
+        "key": "ctrl+h",
+        "command": "deleteLeft",
+        "when": "editorTextFocus && neovim.init && neovim.mode == 'insert'"
+    },
+    {
+        "key": "ctrl+d",
+        "command": "deleteRight",
+        "when": "editorTextFocus && neovim.init && neovim.mode == 'insert'"
+    },
+    // 行末カット
+    {
+        "key": "ctrl+k",
+        "command": "runCommands",
+        "args": {
+            "commands": [
+                "cursorEndSelect", // 行末まで選択
+                "editor.action.clipboardCutAction" // カット
+            ]
+        },
+        "when": "editorTextFocus"
+    },
+
+    // insertモード時にRedo
+    {
+        "key": "ctrl+r",
+        "command": "redo",
+        "when": "editorTextFocus && neovim.mode == 'insert'"
+    },
+    // insertモード時に単語分進む
+    {
+        "key": "alt+f",
+        "command": "cursorWordEndRight",
+        "when": "textInputFocus && !accessibilityModeEnabled && neovim.mode == 'insert'"
+    },
+    // insertモード時に単語分戻る
+    {
+        "key": "alt+b",
+        "command": "cursorWordStartLeft",
+        "when": "textInputFocus && !accessibilityModeEnabled && neovim.mode == 'insert'"
+    },
+    // Which Key(neovimと通信している際は、init.luaから呼ぶ)
+    {
+        "key": "space",
+        "command": "whichkey.show",
+        "when": "(!activeEditor || activeEditor == 'gettingStartedPage' || activeEditor == 'workbench.editors.errorEditor') && focusedView == ''"
+    },
+    // Ex Commandインプットにフォーカス時, ctrl+hでbackspace
+    {
+        "key": "ctrl+h",
+        "command": "vscode-neovim.send-cmdline",
+        "args": "<C-h>",
+        "when": "neovim.mode == 'cmdline'"
+    },
+    // Go back/forwardはVSCode側の機能を使う
+    // 前の位置に戻る
+    {
+        "key": "ctrl+t",
+        "command": "workbench.action.navigateBack",
+        "when": "editorTextFocus"
+    },
+    // 次の位置に進む
+    {
+        "key": "ctrl+shift+t",
+        "command": "workbench.action.navigateToLastEditLocation"
+    },
+    // insert時にenterキーを押した挙動に対応
+    {
+        "key": "ctrl+m",
+        "command": "type",
+        "args": {
+            "text": "\n"
+        },
+        "when": "editorTextFocus && neovim.init && neovim.mode == 'insert' && !suggestWidgetVisible"
+    },
+    // NeoVim側にはctrl+gはESCで伝わるようにする
+    {
+        "key": "ctrl+g",
+        "command": "-workbench.action.gotoLine"
+    },
+    {
+        "key": "ctrl+g",
+        "command": "vscode-neovim.send",
+        "args": "<ESC>",
+        "when": "editorTextFocus && neovim.init"
+    },
+    // サイドバーの全文検索(Search)
+    // VSCode NeoVimによりVim風操作が使えるが、
+    // 検索inputから結果一覧に移動するのがマウス利用が必要なので、キーボードだけで移動できるようにする
+    {
+        "key": "ctrl+j",
+        "command": "search.focus.nextInputBox",
+        "when": "sideBarFocus && focusedView == 'workbench.view.search'"
+    },
+    {
+        "key": "ctrl+k",
+        "command": "search.focus.previousInputBox",
+        "when": "sideBarFocus && focusedView == 'workbench.view.search'"
+    },
+    // サイドバーのソースコントロール (SCM: Source Control Management)
+    // space => フォーカスはそのまま、差分を開く
+    // enter/ctrl+m => 差分を開いてフォーカスを移す
+    // コミットメッセージ入力欄にフォーカス
+    {
+        "key": "i",
+        "command": "workbench.scm.action.focusPreviousInput",
+        "when": "sideBarFocus && focusedView == 'workbench.scm' && listFocus && !inputFocus"
+    },
+    // 上のリソースグループにフォーカス移動
+    {
+        "key": "ctrl+k",
+        "command": "workbench.scm.action.focusPreviousResourceGroup",
+        "when": "sideBarFocus && focusedView == 'workbench.scm'"
+    },
+    // 下のリソースグループにフォーカス移動
+    {
+        "key": "ctrl+j",
+        "command": "workbench.scm.action.focusNextResourceGroup",
+        "when": "sideBarFocus && focusedView == 'workbench.scm'"
+    },
+    // すべてステージ
+    {
+        "key": "shift+s",
+        "command": "git.stageAll",
+        "when": "sideBarFocus && focusedView == 'workbench.scm' && listFocus && !inputFocus"
+    },
+    // すべてアンステージ
+    {
+        "key": "shift+u",
+        "command": "git.unstageAll",
+        "when": "sideBarFocus && focusedView == 'workbench.scm' && listFocus && !inputFocus"
+    },
+    // すべての変更を破棄
+    {
+        "key": "shift+x",
+        "command": "git.cleanAll",
+        "when": "sideBarFocus && focusedView == 'workbench.scm' && listFocus && !inputFocus"
+    },
+    // コミット
+    {
+        "key": "c",
+        "command": "git.commit",
+        "when": "sideBarFocus && focusedView == 'workbench.scm' && listFocus && !inputFocus"
+    },
+    // スタッシュ
+    {
+        "key": "z",
+        "command": "git.stash",
+        "when": "sideBarFocus && focusedView == 'workbench.scm' && listFocus && !inputFocus"
+    },
+    // ===== 今の所、spaceで開いた後しか効果がない =====
+    // 差分ではなく変更されたファイルを開く
+    {
+        "key": "o",
+        "command": "git.openFile",
+        "when": "sideBarFocus && focusedView == 'workbench.scm' && listFocus && !inputFocus"
+    },
+    // そのファイルをステージする
+    {
+        "key": "s",
+        "command": "git.stage",
+        "when": "sideBarFocus && focusedView == 'workbench.scm' && listFocus && !inputFocus"
+    },
+    // そのファイルをアンステージする
+    {
+        "key": "u",
+        "command": "git.unstage",
+        "when": "sideBarFocus && focusedView == 'workbench.scm' && listFocus && !inputFocus"
+    },
+    // そのファイルの変更を破棄する
+    {
+        "key": "x",
+        "command": "git.clean",
+        "when": "sideBarFocus && focusedView == 'workbench.scm' && listFocus && !inputFocus"
+    },
+    {
+        "key": "ctrl+t",
+        "command": "-workbench.action.showAllSymbols"
+    }
+]
